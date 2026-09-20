@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ELECTRO HUB — Калькулятор электромонтажа</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-body: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --accent-blue: #38bdf8;
+            --accent-green: #10b981;
+            --accent-orange: #f59e0b;
+            --accent-purple: #a855f7;
+            --accent-red: #ef4444;
+            --viber: #7360f2;
+            --telegram: #0088cc;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --input-bg: #0f172a;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            padding: 20px 10px;
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(56, 189, 248, 0.08) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(16, 185, 129, 0.08) 0px, transparent 50%);
+        }
+
+        .calculator {
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--card-border);
+            padding: 28px 24px;
+            border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            max-width: 480px;
+            width: 100%;
+        }
+
+        .header-brand {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+        .brand-logo {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(56, 189, 248, 0.1);
+            color: var(--accent-blue);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            border: 1px solid rgba(56, 189, 248, 0.2);
+        }
+        h2 {
+            font-size: 22px;
+            font-weight: 800;
+            color: #ffffff;
+            letter-spacing: -0.5px;
+        }
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 12px;
+            margin-top: 4px;
+        }
+
+        .field-group {
+            background: rgba(15, 23, 42, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 16px;
+            border-radius: 16px;
+            margin-bottom: 16px;
+        }
+
+        .field-label {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-weight: 600;
+            font-size: 13px;
+            color: #e2e8f0;
+            margin-bottom: 10px;
+        }
+
+        /* Segmented Control Styles */
+        .segmented-control {
+            display: flex;
+            flex-wrap: wrap;
+            background: var(--input-bg);
+            border-radius: 12px;
+            padding: 4px;
+            gap: 4px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .segmented-btn {
+            flex: 1 1 auto;
+            min-width: 60px;
+            padding: 8px 6px;
+            font-size: 11px;
+            font-weight: 600;
+            border: none;
+            background: transparent;
+            color: var(--text-muted);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+        }
+        .segmented-btn.active {
+            background: var(--accent-blue);
+            color: #0f172a;
+            font-weight: 700;
+            box-shadow: 0 2px 8px rgba(56, 189, 248, 0.3);
+        }
+
+        /* Hidden Range Sliders */
+        input[type="range"] { display: none; }
+
+        /* Input Styling */
+        input[type="number"] {
+            width: 100%;
+            padding: 11px 12px;
+            background: var(--input-bg);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            color: #ffffff;
+            font-size: 14px;
+            font-weight: 600;
+            outline: none;
+            transition: all 0.2s;
+        }
+        input[type="number"]:focus {
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15);
+        }
+
+        .three-inputs { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+        .grid-2x2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+        .input-sublabel {
+            font-size: 10px;
+            color: var(--text-muted);
+            margin-bottom: 5px;
+            display: block;
+            font-weight: 600;
+        }
+
+        /* Custom Colors for Inputs */
+        .color-orange input { border-color: rgba(245, 158, 11, 0.3); }
+        .color-green input { border-color: rgba(16, 185, 129, 0.3); }
+        .color-blue input { border-color: rgba(56, 189, 248, 0.3); }
+        .color-purple input { border-color: rgba(168, 85, 247, 0.3); }
+        .color-red input { border-color: rgba(239, 68, 68, 0.3); }
+
+        /* Checkbox styling */
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 0;
+            cursor: pointer;
+            font-size: 13px;
+            color: #cbd5e1;
+        }
+        .checkbox-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--accent-blue);
+            cursor: pointer;
+        }
+
+        /* Hints */
+        .hint-box {
+            background: rgba(16, 185, 129, 0.1);
+            border-left: 3px solid var(--accent-green);
+            padding: 10px 12px;
+            border-radius: 8px;
+            font-size: 11px;
+            color: #6ee7b7;
+            margin-top: 10px;
+            line-height: 1.4;
+        }
+        .warning-box {
+            background: rgba(245, 158, 11, 0.1);
+            border-left: 3px solid var(--accent-orange);
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 11px;
+            color: #fcd34d;
+            margin-top: 8px;
+            display: none;
+        }
+
+        /* Primary Action Button */
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-blue), #0284c7);
+            color: #0f172a;
+            border: none;
+            padding: 15px;
+            width: 100%;
+            font-size: 15px;
+            font-weight: 800;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 15px rgba(56, 189, 248, 0.25);
+            margin-top: 10px;
+        }
+        .btn-primary:hover {
+            opacity: 0.95;
+            transform: translateY(-1px);
+        }
+
+        /* Result Card */
+        .result-card {
+            background: linear-gradient(145deg, #1e293b, #0f172a);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            border-radius: 16px;
+            padding: 20px;
+            margin-top: 20px;
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .result-header { text-align: center; }
+        .result-title { font-size: 11px; font-weight: 700; color: var(--text-muted); letter-spacing: 1px; text-transform: uppercase; }
+        .result-price { font-size: 32px; font-weight: 800; color: var(--accent-blue); margin: 4px 0; }
+        .result-clean { font-size: 12px; color: #6ee7b7; background: rgba(16, 185, 129, 0.1); padding: 4px 10px; border-radius: 20px; display: inline-block; margin-top: 4px; }
+
+        .breakdown-list {
+            margin-top: 16px;
+            border-top: 1px dashed rgba(255,255,255,0.1);
+            padding-top: 12px;
+            font-size: 12px;
+            line-height: 1.7;
+            color: #cbd5e1;
+        }
+        .breakdown-row { display: flex; justify-content: space-between; margin-bottom: 4px; }
+        .breakdown-row span:last-child { font-weight: 700; color: #ffffff; }
+
+        /* Action Buttons */
+        .share-buttons {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            margin-top: 16px;
+        }
+        .btn-share {
+            border: none;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            color: white;
+            transition: opacity 0.2s;
+        }
+        .btn-copy { background: rgba(255,255,255,0.1); color: #fff; }
+        .btn-pdf { background: var(--accent-purple); color: #fff; }
+        .btn-viber { background: var(--viber); }
+        .btn-telegram { background: var(--telegram); }
+        .btn-share:hover { opacity: 0.85; }
+
+        .note { font-size: 10px; color: var(--text-muted); text-align: center; margin-top: 12px; font-style: italic; }
+
+        /* PRINT / PDF STYLES */
+        @media print {
+            body {
+                background: #ffffff !important;
+                color: #000000 !important;
+                padding: 0 !important;
+            }
+            .calculator {
+                background: #ffffff !important;
+                box-shadow: none !important;
+                border: none !important;
+                max-width: 100% !important;
+                padding: 0 !important;
+                backdrop-filter: none !important;
+            }
+            .field-group, .btn-primary, .share-buttons, input, button {
+                display: none !important;
+            }
+            .header-brand {
+                margin-bottom: 16px;
+            }
+            .brand-logo {
+                background: #0284c7 !important;
+                color: #ffffff !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            h2 {
+                color: #0f172a !important;
+            }
+            .subtitle {
+                color: #475569 !important;
+            }
+            .result-card {
+                display: block !important;
+                background: #ffffff !important;
+                border: 1px solid #cbd5e1 !important;
+                border-radius: 8px !important;
+                padding: 16px !important;
+                box-shadow: none !important;
+                color: #0f172a !important;
+            }
+            .result-title {
+                color: #475569 !important;
+            }
+            .result-price {
+                color: #0284c7 !important;
+            }
+            .result-clean {
+                background: #dcfce7 !important;
+                color: #15803d !important;
+                border: 1px solid #86efac !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            .breakdown-list {
+                border-top-color: #cbd5e1 !important;
+                color: #1e293b !important;
+            }
+            .breakdown-row span:last-child {
+                color: #0f172a !important;
+            }
+            .note {
+                color: #64748b !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="calculator">
+        <div class="header-brand">
+            <div class="brand-logo">⚡ ELECTRO HUB</div>
+            <h2>Расчёт электромонтажа</h2>
+            <div class="subtitle">г. Берёза и район • ИП Сахилов Р. А.</div>
+        </div>
+
+        <!-- 1. ТИП ОБЪЕКТА -->
+        <div class="field-group">
+            <div class="field-label">🏠 Тип объекта</div>
+            <div class="segmented-control" data-slider="typeSlider">
+                <button class="segmented-btn active" data-val="1">🏢 Квартира</button>
+                <button class="segmented-btn" data-val="2">🏠 Дом / Гараж</button>
+            </div>
+            <input type="range" id="typeSlider" min="1" max="2" value="1">
+            <div id="typeLabel" style="display:none;">🏢 Квартира</div>
+        </div>
+
+        <!-- 2. СПОСОБ МОНТАЖА -->
+        <div class="field-group">
+            <div class="field-label">⚙️ Способ монтажа</div>
+            <div class="segmented-control" data-slider="mountSlider">
+                <button class="segmented-btn active" data-val="1">🧱 Скрытый</button>
+                <button class="segmented-btn" data-val="2">🪵 Накладной</button>
+            </div>
+            <input type="range" id="mountSlider" min="1" max="2" value="1">
+            <div id="mountLabel" style="display:none;">🧱 Скрытый монтаж (в стены)</div>
+        </div>
+
+        <!-- 3. КАБЕЛЬ И ШТРОБЫ -->
+        <div class="field-group">
+            <div class="field-label">📏 Кабель и штробы</div>
+            <div class="three-inputs">
+                <div class="color-orange">
+                    <span class="input-sublabel">🔪 Штроба (м)</span>
+                    <input type="number" id="strobeMeters" value="0" min="0" placeholder="0">
+                </div>
+                <div class="color-green">
+                    <span class="input-sublabel">🔌 Без гофры (м)</span>
+                    <input type="number" id="cableNoGofra" value="0" min="0" placeholder="0">
+                </div>
+                <div class="color-orange">
+                    <span class="input-sublabel">🔌 В гофре (м)</span>
+                    <input type="number" id="cableGofra" value="0" min="0" placeholder="0">
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. ШИРИНА ШТРОБЫ -->
+        <div class="field-group">
+            <div class="field-label">🔪 Ширина штробы</div>
+            <div class="segmented-control" data-slider="strobeSlider">
+                <button class="segmented-btn" data-val="1">20×20</button>
+                <button class="segmented-btn active" data-val="2">30×30</button>
+                <button class="segmented-btn" data-val="3">40×40+</button>
+            </div>
+            <input type="range" id="strobeSlider" min="1" max="3" value="2">
+            <div id="strobeLabel" style="display:none;">30×30 мм</div>
+        </div>
+
+        <!-- 5. МАТЕРИАЛ СТЕН -->
+        <div class="field-group">
+            <div class="field-label">🧱 Материал стен</div>
+            <div class="segmented-control" data-slider="wallSlider">
+                <button class="segmented-btn" data-val="1">ГКЛ</button>
+                <button class="segmented-btn active" data-val="2">Газосиликат</button>
+                <button class="segmented-btn" data-val="3">Кирпич</button>
+                <button class="segmented-btn" data-val="4">Бетон</button>
+                <button class="segmented-btn" data-val="5">Дерево</button>
+            </div>
+            <input type="range" id="wallSlider" min="1" max="5" value="2">
+            <div id="wallLabel" style="display:none;">🧱 Газосиликатный блок</div>
+        </div>
+
+        <!-- 6. ЭТАП РАБОТ -->
+        <div class="field-group">
+            <div class="field-label">🛠 Этап работ</div>
+            <div class="segmented-control" data-slider="stageSlider">
+                <button class="segmented-btn" data-val="1">⚒️ Черновые</button>
+                <button class="segmented-btn" data-val="2">🔌 Чистовые</button>
+                <button class="segmented-btn active" data-val="3">🔑 Под ключ</button>
+            </div>
+            <input type="range" id="stageSlider" min="1" max="3" value="3">
+            <div id="stageLabel" style="display:none;">🔑 Под ключ</div>
+        </div>
+
+        <!-- 7. ТОЧКИ, СВЕТИЛЬНИКИ, КОРОБКИ, АВТОМАТЫ -->
+        <div class="field-group">
+            <div class="field-label">🔌 Точки и оборудование</div>
+            <div class="grid-2x2">
+                <div class="color-blue">
+                    <span class="input-sublabel">🔌 Розетки/выкл (шт)</span>
+                    <input type="number" id="points" value="0" min="0" placeholder="0">
+                </div>
+                <div class="color-orange">
+                    <span class="input-sublabel">💡 Светильники (шт)</span>
+                    <input type="number" id="lights" value="0" min="0" placeholder="0">
+                </div>
+                <div class="color-green">
+                    <span class="input-sublabel">📦 Коробок (шт)</span>
+                    <input type="number" id="korobki" value="0" min="0" placeholder="0">
+                </div>
+                <div class="color-purple">
+                    <span class="input-sublabel">🔢 Автоматов (шт)</span>
+                    <input type="number" id="automatsCount" value="0" min="0" placeholder="0">
+                </div>
+            </div>
+        </div>
+
+        <!-- 8. МЕСТОПОЛОЖЕНИЕ -->
+        <div class="field-group">
+            <div class="field-label">📍 Локация объекта</div>
+            <div class="segmented-control" data-slider="locationSlider">
+                <button class="segmented-btn active" data-val="1">🏘️ Берёза (0 руб)</button>
+                <button class="segmented-btn" data-val="2">🚗 За городом</button>
+            </div>
+            <input type="range" id="locationSlider" min="1" max="2" value="1">
+            <div id="locationLabel" style="display:none;">🏘️ В черте Берёзы — 0 руб.</div>
+
+            <div id="kmField" style="margin-top: 10px; display: none;">
+                <span class="input-sublabel">Расстояние от Берёзы (км)</span>
+                <input type="number" id="distance" value="15" min="1" placeholder="км">
+                <div class="warning-box" id="farWarning">⚠️ Объект дальше 30 км.</div>
+            </div>
+        </div>
+
+        <!-- 9. НАЛОГИ -->
+        <div class="field-group">
+            <div class="field-label">💼 Режим налогообложения</div>
+            <div class="segmented-control" data-slider="taxSlider">
+                <button class="segmented-btn" data-val="1">👤 Физлицо</button>
+                <button class="segmented-btn" data-val="2">📋 Единый</button>
+                <button class="segmented-btn active" data-val="3">📊 Общая 20%</button>
+            </div>
+            <input type="range" id="taxSlider" min="1" max="3" value="3">
+            <div id="taxLabel" style="display:none;">📊 Общая система (20%)</div>
+            <div id="taxHint" class="hint-box">📊 Учитывает 20% налоговой нагрузки от стоимости работ.</div>
+        </div>
+
+        <!-- 10. ПОДЗЕМНЫЙ ВВОД И ДОПЫ -->
+        <div class="field-group color-red">
+            <div class="field-label">🏠 Дополнительно</div>
+            <div style="margin-bottom: 10px;">
+                <span class="input-sublabel">🚜 Подземный ввод (п.м.)</span>
+                <input type="number" id="trenchMeters" value="0" min="0" placeholder="0">
+            </div>
+            <label class="checkbox-item">
+                <input type="checkbox" id="grounding"> ⚡ Контур заземления (+350 руб)
+            </label>
+            <label class="checkbox-item">
+                <input type="checkbox" id="warmFloor"> ♨️ Тёплый пол (+180 руб)
+            </label>
+        </div>
+
+        <button class="btn-primary" onclick="calculate()">📊 Рассчитать стоимость</button>
+
+        <!-- RESULT CARD -->
+        <div class="result-card" id="resultBox">
+            <div class="result-header">
+                <div class="result-title">Стоимость для клиента</div>
+                <div class="result-price" id="finalPrice">0 руб.</div>
+                <div class="result-clean" id="cleanPrice" style="display: none;"></div>
+            </div>
+
+            <div class="breakdown-list" id="breakdown"></div>
+
+            <div class="share-buttons">
+                <button class="btn-share btn-copy" onclick="copyCheck()">📋 Чек</button>
+                <button class="btn-share btn-pdf" onclick="printPDF()">🖨️ PDF / Печать</button>
+                <button class="btn-share btn-viber" onclick="shareViber()">💬 Viber</button>
+                <button class="btn-share btn-telegram" onclick="shareTelegram()">✈️ Telegram</button>
+            </div>
+
+            <div class="note" id="finalNote">*Цены актуальны для Брестской обл. (Берёза).</div>
+        </div>
+    </div>
+
+    <script>
+        const PRICES = {
+            strobeWork: {
+                gkl:      { 1: 0,  2: 0,  3: 0 },
+                gazosil:  { 1: 6,  2: 8,  3: 12 },
+                brick:    { 1: 7,  2: 10, 3: 15 },
+                concrete: { 1: 12, 2: 16, 3: 24 },
+                wood:     { 1: 8,  2: 12, 3: 18 }
+            },
+            cableNoGofra: 3.5,
+            cableGofra: 4.5,
+            podrozetnikInstall: { flush: 15, surface: 10 },
+            korobkaInstall: { flush: 42, surface: 15 },
+            finishWorkPerPoint: 15,
+            finishConsumablesPerPoint: 6,
+            lightInstall: 20,
+            shieldAssembly: { small: 300, std: 400, vip: 500 },
+            automatInstall: 20,
+            trenchPerMeter: 45,
+            logistics: { outBase: 30, perKm: 1.5 },
+            extras: { grounding: 350, warmFloor: 180 },
+            tax: { edinRate: 0.10, obshRate: 0.20 }
+        };
+
+        const slidersConfig = {
+            type: { labelId: 'typeLabel', labels: {1:'🏢 Квартира', 2:'🏠 Частный дом / Гараж'} },
+            mount: { labelId: 'mountLabel', labels: {1:'🧱 Скрытый монтаж (в стены)', 2:'🪵 Накладной монтаж (открытый)'} },
+            strobe: { labelId: 'strobeLabel', labels: {1:'20×20 мм', 2:'30×30 мм', 3:'40×40 мм+'} },
+            wall: { labelId: 'wallLabel', labels: {1:'📄 Гипсокартон (ГКЛ)', 2:'🧱 Газосиликатный блок', 3:'🧱 Кирпич', 4:'🧱 Бетон / Монолит', 5:'🪵 Дерево / Брус'} },
+            stage: { labelId: 'stageLabel', labels: {1:'⚒️ Только черновые', 2:'🔌 Только чистовые', 3:'🔑 Под ключ'} },
+            location: { labelId: 'locationLabel', labels: {1:'🏘️ В черте Берёзы — 0 руб.', 2:'🚗 За городом'} },
+            tax: { labelId: 'taxLabel', hintId: 'taxHint', labels: {1:'👤 Физлицо', 2:'📋 Единый налог (распред.)', 3:'📊 Общая система (20%)'},
+                hints: {1:'', 2:'💰 Учитывает распределение единого налога и ФСЗН (+10% к заказу).', 3:'📊 Учитывает 20% налоговой нагрузки от стоимости работ.'} }
+        };
+
+        // UI Segmented Controls Handler
+        document.querySelectorAll('.segmented-control').forEach(control => {
+            const targetSliderId = control.dataset.slider;
+            const targetSlider = document.getElementById(targetSliderId);
+
+            control.querySelectorAll('.segmented-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    control.querySelectorAll('.segmented-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    const val = btn.dataset.val;
+                    targetSlider.value = val;
+
+                    const configKey = targetSliderId.replace('Slider', '');
+                    const cfg = slidersConfig[configKey];
+                    if (cfg) {
+                        document.getElementById(cfg.labelId).textContent = cfg.labels[val];
+                        if (cfg.hintId) {
+                            const hintEl = document.getElementById(cfg.hintId);
+                            if (val === '1') { hintEl.style.display = 'none'; }
+                            else { hintEl.style.display = 'block'; hintEl.textContent = cfg.hints[val]; }
+                        }
+                    }
+
+                    if (targetSliderId === 'locationSlider') {
+                        document.getElementById('kmField').style.display = val === '2' ? 'block' : 'none';
+                    }
+
+                    calculate();
+                });
+            });
+        });
+
+        // Event listeners
+        ['strobeMeters','cableNoGofra','cableGofra','points','lights','korobki','automatsCount','trenchMeters','distance','grounding','warmFloor'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.addEventListener(el.type === 'checkbox' ? 'change' : 'input', calculate);
+        });
+
+        function calculate() {
+            const strobeNum = parseInt(document.getElementById('strobeSlider').value);
+            const mountMode = parseInt(document.getElementById('mountSlider').value);
+            const stage = parseInt(document.getElementById('stageSlider').value);
+            const location = parseInt(document.getElementById('locationSlider').value);
+            
+            const wallVal = parseInt(document.getElementById('wallSlider').value);
+            const wallMap = { 1: 'gkl', 2: 'gazosil', 3: 'brick', 4: 'concrete', 5: 'wood' };
+            const wall = wallMap[wallVal] || 'gazosil';
+            
+            const taxMode = parseInt(document.getElementById('taxSlider').value);
+
+            const strobeMeters = parseInt(document.getElementById('strobeMeters').value) || 0;
+            const cableNoGofraMeters = parseInt(document.getElementById('cableNoGofra').value) || 0;
+            const cableGofraMeters = parseInt(document.getElementById('cableGofra').value) || 0;
+            const points = parseInt(document.getElementById('points').value) || 0;
+            const lights = parseInt(document.getElementById('lights').value) || 0;
+            const korobki = parseInt(document.getElementById('korobki').value) || 0;
+            const automatsCount = parseInt(document.getElementById('automatsCount').value) || 0;
+            const trenchMeters = parseInt(document.getElementById('trenchMeters').value) || 0;
+            const distance = parseInt(document.getElementById('distance').value) || 0;
+
+            if (strobeMeters <= 0 && cableNoGofraMeters <= 0 && cableGofraMeters <= 0 && points <= 0 && lights <= 0 && korobki <= 0 && trenchMeters <= 0) {
+                document.getElementById('resultBox').style.display = 'none';
+                return;
+            }
+
+            let roughWorkCost = 0, cableNoGofraCost = 0, cableGofraCost = 0;
+            let podrozetnikCost = 0, korobkaCost = 0, finishWorkCost = 0, finishConsumablesCost = 0, lightsCost = 0;
+            let shieldCost = 0, trenchCost = 0, extrasCost = 0, logisticsCost = 0;
+
+            const korobkaRate = mountMode === 1 ? PRICES.korobkaInstall.flush : PRICES.korobkaInstall.surface;
+            const podrozetnikRate = mountMode === 1 ? PRICES.podrozetnikInstall.flush : PRICES.podrozetnikInstall.surface;
+
+            if ((stage === 1 || stage === 3) && strobeMeters > 0) roughWorkCost = strobeMeters * PRICES.strobeWork[wall][strobeNum];
+            if ((stage === 1 || stage === 3) && cableNoGofraMeters > 0) cableNoGofraCost = cableNoGofraMeters * PRICES.cableNoGofra;
+            if ((stage === 1 || stage === 3) && cableGofraMeters > 0) cableGofraCost = cableGofraMeters * PRICES.cableGofra;
+            if ((stage === 1 || stage === 3) && points > 0) podrozetnikCost = points * podrozetnikRate;
+            if ((stage === 1 || stage === 3) && korobki > 0) korobkaCost = korobki * korobkaRate;
+            if ((stage === 2 || stage === 3) && points > 0) {
+                finishWorkCost = points * PRICES.finishWorkPerPoint;
+                finishConsumablesCost = points * PRICES.finishConsumablesPerPoint;
+            }
+            if ((stage === 2 || stage === 3) && lights > 0) lightsCost = lights * PRICES.lightInstall;
+            if ((stage === 2 || stage === 3) && automatsCount > 0) {
+                const shieldBase = automatsCount <= 8 ? PRICES.shieldAssembly.small :
+                                   automatsCount <= 16 ? PRICES.shieldAssembly.std :
+                                   PRICES.shieldAssembly.vip;
+                shieldCost = shieldBase + (automatsCount * PRICES.automatInstall);
+            }
+            if (trenchMeters > 0) trenchCost = trenchMeters * PRICES.trenchPerMeter;
+            if (location === 2) {
+                logisticsCost = PRICES.logistics.outBase + (distance * PRICES.logistics.perKm);
+                document.getElementById('farWarning').style.display = distance > 30 ? 'block' : 'none';
+            } else {
+                document.getElementById('farWarning').style.display = 'none';
+            }
+
+            if (document.getElementById('grounding').checked) extrasCost += PRICES.extras.grounding;
+            if (document.getElementById('warmFloor').checked) extrasCost += PRICES.extras.warmFloor;
+
+            const baseTotal = roughWorkCost + cableNoGofraCost + cableGofraCost + podrozetnikCost + 
+                              korobkaCost + finishWorkCost + finishConsumablesCost + lightsCost + shieldCost + trenchCost + 
+                              extrasCost + logisticsCost;
+
+            let taxAmount = 0, totalForClient = baseTotal, cleanMoney = baseTotal;
+            let taxDescription = '';
+
+            if (taxMode === 2) {
+                taxAmount = Math.round(baseTotal * PRICES.tax.edinRate);
+                totalForClient = baseTotal + taxAmount;
+                taxDescription = 'Единый налог/ФСЗН (+10%)';
+            } else if (taxMode === 3) {
+                taxAmount = Math.round(baseTotal * PRICES.tax.obshRate);
+                totalForClient = baseTotal + taxAmount;
+                taxDescription = 'Общая система (+20%)';
+            }
+
+            totalForClient = Math.round(totalForClient / 10) * 10;
+            if (totalForClient < 200) totalForClient = 200;
+
+            document.getElementById('resultBox').style.display = 'block';
+            document.getElementById('finalPrice').innerText = totalForClient.toLocaleString('ru-RU') + ' руб.';
+
+            const cleanDiv = document.getElementById('cleanPrice');
+            if (taxMode !== 1) {
+                cleanDiv.style.display = 'inline-block';
+                cleanDiv.innerHTML = '👛 Доход мастера: <strong>' + cleanMoney.toLocaleString('ru-RU') + ' руб.</strong>';
+            } else { cleanDiv.style.display = 'none'; }
+
+            const wallNames = { gkl: 'ГКЛ', gazosil: 'Газосиликат', brick: 'Кирпич', concrete: 'Бетон', wood: 'Дерево' };
+            const strobeNames = { 1: '20×20', 2: '30×30', 3: '40×40+' };
+            
+            let b = '';
+            if (roughWorkCost > 0) b += `<div class="breakdown-row"><span>🔨 Штробление (${strobeMeters}м, ${strobeNames[strobeNum]}, ${wallNames[wall]}):</span><span>${roughWorkCost} руб.</span></div>`;
+            if (cableNoGofraCost > 0) b += `<div class="breakdown-row"><span>🔌 Кабель без гофры (${cableNoGofraMeters}м):</span><span>${cableNoGofraCost} руб.</span></div>`;
+            if (cableGofraCost > 0) b += `<div class="breakdown-row"><span>🔌 Кабель в гофре (${cableGofraMeters}м):</span><span>${cableGofraCost} руб.</span></div>`;
+            if (podrozetnikCost > 0) b += `<div class="breakdown-row"><span>🔩 Подрозетники (${points} шт):</span><span>${podrozetnikCost} руб.</span></div>`;
+            if (korobkaCost > 0) b += `<div class="breakdown-row"><span>📦 Распредкоробки (${korobki} шт):</span><span>${korobkaCost} руб.</span></div>`;
+            if (finishWorkCost > 0) b += `<div class="breakdown-row"><span>🔌 Установка точек (${points} шт):</span><span>${finishWorkCost} руб.</span></div>`;
+            if (finishConsumablesCost > 0) b += `<div class="breakdown-row"><span>📦 Расходники точек (${points} шт):</span><span>${finishConsumablesCost} руб.</span></div>`;
+            if (lightsCost > 0) b += `<div class="breakdown-row"><span>💡 Светильники (${lights} шт):</span><span>${lightsCost} руб.</span></div>`;
+            if (shieldCost > 0) b += `<div class="breakdown-row"><span>🔢 Сборка щита (${automatsCount} авт):</span><span>${shieldCost} руб.</span></div>`;
+            if (trenchCost > 0) b += `<div class="breakdown-row"><span>🚜 Подземный ввод (${trenchMeters}м):</span><span>${trenchCost} руб.</span></div>`;
+            b += `<div class="breakdown-row"><span>🚗 Доставка / Выезд:</span><span>${logisticsCost} руб.</span></div>`;
+            if (document.getElementById('grounding').checked) b += `<div class="breakdown-row"><span>⚡ Контур заземления:</span><span>+350 руб.</span></div>`;
+            if (document.getElementById('warmFloor').checked) b += `<div class="breakdown-row"><span>♨️ Тёплый пол:</span><span>+180 руб.</span></div>`;
+
+            if (taxMode !== 1) {
+                b += `<div class="breakdown-row" style="color:#6ee7b7; margin-top:6px;"><span>🧾 ${taxDescription}:</span><span>+${taxAmount} руб.</span></div>`;
+            }
+            document.getElementById('breakdown').innerHTML = b;
+
+            document.getElementById('finalNote').innerHTML = taxMode === 2 ? '*Включает распределенный налог и страховые отчисления.' :
+                                                              taxMode === 3 ? '*Общая система: 20% от суммы работ.' :
+                                                              '*Цены актуальны для Брестской обл. (Берёза).';
+        }
+
+        function buildCheckText() {
+            let text = "🧾 СМЕТА НА ЭЛЕКТРОМОНТАЖНЫЕ РАБОТЫ\n";
+            text += "-----------------------------------\n";
+            const rows = document.querySelectorAll('#breakdown .breakdown-row');
+            rows.forEach(row => {
+                const spans = row.querySelectorAll('span');
+                text += `${spans[0].innerText} — ${spans[1].innerText}\n`;
+            });
+            text += "-----------------------------------\n";
+            text += `ИТОГО К ОПЛАТЕ: ${document.getElementById('finalPrice').innerText}\n\n`;
+            text += "ELECTRO HUB — Качественный электромонтаж\nг. Берёза и район\nИП Сахилов Р. А.\n📞 +375 (29) 544-67-25";
+            return text;
+        }
+
+        function copyCheck() {
+            navigator.clipboard.writeText(buildCheckText()).then(() => alert("Чек скопирован в буфер обмена!"));
+        }
+        function printPDF() {
+            window.print();
+        }
+        function shareViber() {
+            window.open(`viber://forward?text=${encodeURIComponent(buildCheckText())}`, '_blank');
+        }
+        function shareTelegram() {
+            window.open(`https://t.me/share/url?url=&text=${encodeURIComponent(buildCheckText())}`, '_blank');
+        }
+
+        calculate();
+    </script>
+</body>
+</html>
